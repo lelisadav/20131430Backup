@@ -59,25 +59,13 @@
 					[else (member? sym (cdr ls))]))])
 		(union '(a c e d k) '(e b a d c))))
 		
-	    (eval-one-exp '(letrec ([product
+	   (eval-one-exp '(letrec ([product
 		       (lambda (x y)
-			   
+			   (display(+ 3 2))
 			   
 			 (if (null? y)
 			     '()
 			     (let loop ([x x] [accum '()])
-					(newline)
-					(newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
-			   (newline)
 			       (if (null? x)
 				   accum
 				   (loop (cdr x)

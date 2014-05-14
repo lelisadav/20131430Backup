@@ -24,11 +24,6 @@
 			[(*) (apply-all * args 1)]
 			[(quotient) (apply-all quotient args 1)]
 			[(/) (apply-all / args 1)]
-			
-			;; All Prims break after this point, after extensive testing. 
-			;; You cannot use the actual procedure itself to do these.
-			;; It wil learn as a zero for this assignment.
-			;; All need to be re-done.
 			[(zero?) (zero?-def (car args))]
 			[(not) (not-def (car args))]
 			[(and) (and-def args)]
@@ -42,6 +37,7 @@
 			[(assq) (assq-def (car args) (cadr args))]
 			[(eq?) (eq? (car args) (cadr args))]
 			[(equal?) (equal? (car args) (cadr args))]
+			[(eqv?) (eqv? (car args) (cadr args))]
 			[(atom?) (atom?-def (car args))]
 			[(length) (length-def (car args))]
 			[(list->vector) (list->vector-def (car args))]
@@ -93,11 +89,11 @@
 			[(cddr) (cdr (cdr (car args)))]
 			[(cdr) (cdr (car args))]
 						[(map) (map-def (car args) (cdr args))]
-			; [(apply) (display 'apply)(display (cadr args))(apply-def (car args) (cdr args))]
 
 			[(apply) 
-				; (display 'apply)(display (cadr args))
 				(apply-def (car args) (cdr args))]
+			[(list-tail) (list-tail (car args) (cadr args))]
+			[(append) (apply append-def args)]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -258,3 +254,12 @@
 				'()
 				(cons (apply-proc proc (list (car item))) (loop (cdr item)))))))
 
+(define append-def
+  (lambda args
+    (let f ([ls '()] [args args])
+      (if (null? args)
+          ls
+          (let g ([ls ls])
+            (if (null? ls)
+                (f (car args) (cdr args))
+                (cons (car ls) (g (cdr ls))))))))) 

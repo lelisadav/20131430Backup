@@ -26,8 +26,7 @@
 		(body (list-of expression?))]
 	[letrec-exp 
 		(vars (list-of symbol?))
-		(idss (list-of (list-of symbol?)))
-		(vals (list-of expression?))
+		(idss (list-of expression?))
 		(body (list-of expression?))]
 	[cond-exp 
 		(tests (list-of expression?))
@@ -74,7 +73,7 @@
 	(empty-env-record)
 	(extended-env-record
 		(syms list?)
-		(vals vector?)
+		(vals list?)
 		(env environment?)))
 
 (define list-of? 

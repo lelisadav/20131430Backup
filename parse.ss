@@ -143,7 +143,8 @@
 									[splitls (split varvals)]
 									[vars (car splitls)]
 									[vals (cadr splitls)])
-									(letrec-exp vars (map (lambda (exp) (cadr exp)) vals) (map parse-exp (map (lambda (x) (caddr x)) vals)) (map parse-exp body)))])]
+									; (display vals)
+									(letrec-exp vars (map parse-exp vals) (map parse-exp body)))])]
 					[(eqv? (car datum) 'cond)
 						(cond-exp (grab-cond-tests (cdr datum)) (grab-cond-vals (cdr datum)))]
 					[(eqv? (car datum) 'begin)

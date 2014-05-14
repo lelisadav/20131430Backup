@@ -8,6 +8,11 @@
 ; eval-exp is the main component of the interpreter
 
 (print-graph #t)
+(define list-fill
+	(lambda (num obj)
+		(if (zero? num)
+			'()
+			(cons obj (list-fill (- num 1) obj)))))
 ; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
@@ -27,11 +32,21 @@
 			(printf "I shouldn't be here, ever!")]
 		[named-let-exp (name vars exp bodies) ;this is a stub
 			(printf "Something went wrong.")]
-		[letrec-exp (vars idss vals body) 
-		;this first extends the environment recursively, then evaluates the expressions of the body in that new env
-		;let ext-env be ext-recursv then do all the bodies
-		;this currently makes a new recursv env for each body
-			(car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
+		[letrec-exp (vars vals bodies) 
+		;this creates a ls of the length vars, and fills it with evaluated expressions, then puts that in the env.
+			(let* ([ls (list-fill(length vars) '#(42))]
+				[new-env (extend-env vars ls env)]
+				[evals (map (lambda (x) (eval-exp x new-env)) vals)])
+				(set-car! ls (car evals))
+				(set-cdr! ls (cdr evals))
+					(let loop ((bodies bodies))
+						(if (null? (cdr bodies))
+							(eval-exp (car bodies) new-env)
+							(begin 
+								(eval-exp (car bodies) new-env)
+								(loop (cdr bodies))))))]
+			
+			; (car (map (lambda (x) (eval-exp x (extend-env-recursively vars idss vals env))) body))]
 		[lambda-exp (id body)
 			;this converts a lambda-exp to a lambda-proc, which is necessary, because the environment of a lambda-proc 
 			;is not known until it evaluated and that is not done until here, as opposed to being in parse
@@ -66,7 +81,6 @@
 				(begin (loop-through body env)
 					(eval-exp exp env)))]
 		[unless-exp (condition body)
-			;Don't work on these while we still have a lot of work to do!! 
 			(printf "Error! unless-exp")]
 		[when-exp (condition body)
 			;this is also a stub
@@ -75,7 +89,7 @@
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 		
 
-					
+
 ;Gets the last element in a list.
 (define last 
 	(lambda (ls)
@@ -115,42 +129,10 @@
 		; (display (check-in-env? id env)) (newline)
 		; (display id) (newline)
 		; (display env) (newline)
-		(let ([envi 
-			(if (or (symbol? id) (not (list? id)))
-				(with-lists id args env)
-				(if (check-in-env? id env)
-					(go-through-and-change id args env)
-					(extend-env 
+		(let ([envi (extend-env 
 						id
-						args env)))])
+						args env)])
 			(loop-through body envi))))
-				
-;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
-(define with-lists 
-	(lambda (vars args env)
-		(cond [(symbol? vars) 
-				(extend-env (list vars) 
-					(list args) env)]
-			[(not (list? vars)) 
-				(let* ([x-vars (get-nice-vars vars)]
-						[x-args (find-correct-args args (get-list-placement vars 0) 0)])
-					(extend-env x-vars x-args env))])))
-					
-(define get-nice-vars
-	(lambda (nls)
-		(cond [(not (pair? nls)) (cons nls '())]
-			[else (cons (car nls) (get-nice-vars (cdr nls)))])))
-			
-(define get-list-placement 
-	(lambda (vars count)
-		(cond [(not (pair? vars)) count]
-			[else (get-list-placement (cdr vars) (+ 1 count))])))
-			
-(define find-correct-args
-	(lambda (args place count)
-		(cond [(equal? count place) 
-				(list args)]
-			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
 
 
 
@@ -169,12 +151,12 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		(newline)
-		(newline)
-		(printf "\tEvaluating:\t")
-		(display x)
-		(newline)
-		(printf "\tThe correct answer is:\t")
+		; (newline)
+		; (newline)
+		; (printf "\tEvaluating:\t")
+		; (display x)
+		; (newline)
+		; (printf "\tThe correct answer is:\t")
 		 (top-level-eval (syntax-expand (parse-exp x)))
 		; (let ((res (eval x)))
 			; (display res)
@@ -189,9 +171,10 @@
 				; (display "\tCorrect!")
 				; (display "\tIncorrect.")
 				; )
-			; ourres)))
+			; ourres))
+			)
 			
-			))
+			)
 
 (define syntax-expand
 	(lambda (datum)
@@ -214,10 +197,10 @@
 							(syntax-expand 
 								(let*-exp (cdr vars) (cdr vals) body))) 
 						(list (car vals))))]
-			[letrec-exp (vars idss vals body)
+			[letrec-exp (vars vals body)
 				;creates a letrec expression
 				; (display idss)
-				(letrec-exp vars idss (map syntax-expand vals) (map syntax-expand body))]
+				(letrec-exp vars (map syntax-expand vals) (map syntax-expand body))]
 			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
 					; name)
 			; expr ...)
@@ -319,12 +302,6 @@
 						; as long as it short-circuited. It will get the correct answer if it's odd! But nothing for anything else... XD
 						)))
 	
-;???????????????Can you explain the use of these two methods?	
-(define place-let-into
-	(lambda (val vars vals)
-		(app-exp (lambda-exp vars
-			(list (syntax-expand val))) (map syntax-expand vals))))
-			
 		
 (define change-to-or
 	(lambda (var ls)
