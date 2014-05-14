@@ -183,8 +183,6 @@
 	(lambda (args)
 		(letrec ([helper 
 			(lambda (n args vec)
-				; (display args)
-				; (newline)
 				(if (< n (vector-length vec))
 					(begin
 					(vector-set! vec n (car args))
@@ -194,55 +192,33 @@
 (define vector-ref-def
 	(lambda (vec n)
 		(vector-ref vec n)))
-; (define vector-ref-def
-	; (lambda (vec n)
-		; (letrec ([helper
-			; (lambda (currvec index)
-				; (display index)
-				; (printf "\t")
-				; (display currvec)
-				; (newline)
-				
-				; (if (= index n)
-					; ( currvec)
-					; (helper  (cdr currvec) (+ 1 index))))])
-		; (helper vec 0))))
-; (define list-def
-	; (lambda args
-		; args))
 (define list-def
 	(lambda (args)
 		(if (null? args)
 			'()
 			(cons (car args) (list-def (cdr args))))
-		; (letrec (
-			; [helper 
-				; (lambda (args)
-					; (if (= 1 (length args))
-						; (cons (car args) '())
-						; (cons (car args) (helper (cdr args)))))])
-		; (helper args))
 		))
 
-;(trace apply-prim-proc zero?-def not-def)
 (define procedure?-def
 	(lambda (args)
 		(proc-val? args)
 		))
-	(define map-def
-	  (lambda (f ls . more)
-	    (if (null? more)
-	        (let map1 ([ls ls])
-	          (if (null? ls)
-	              '()
-	              (cons (apply-proc f (car ls))
-	                    (map1 (cdr ls)))))
-	        (let map-more ([ls ls] [more more])
-	          (if (null? ls)
-	              '()
-	              (cons
-	                (apply-proc f (car ls) (map-def car more))
-	                (map-more (cdr ls) (map-def cdr more))))))))
+
+(define map-def
+  (lambda (f ls . more)
+    (if (null? more)
+        (let map1 ([ls ls])
+          (if (null? ls)
+              '()
+              (cons (apply-proc f (car ls))
+                    (map1 (cdr ls)))))
+        (let map-more ([ls ls] [more more])
+          (if (null? ls)
+              '()
+              (cons
+                (apply-proc f (car ls) (map-def car more))
+                (map-more (cdr ls) (map-def cdr more))))))))
+				
 (define apply-def
 	(lambda (proc args)
 		(apply-proc proc (car args))))

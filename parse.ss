@@ -26,7 +26,7 @@
     (lambda (ls)
       (list (map (lambda (x) (car x)) ls) (map (lambda (y) (cadr y)) ls))))
 (define parse-exp
-	(lambda (datum . childoflist)
+	(lambda (datum)
 		(cond
 			[(symbol? datum)
 				(var-exp datum)]

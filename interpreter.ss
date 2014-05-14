@@ -129,10 +129,43 @@
 		; (display (check-in-env? id env)) (newline)
 		; (display id) (newline)
 		; (display env) (newline)
-		(let ([envi (extend-env 
-						id
-						args env)])
+		(let ([envi 
+			(if (or (symbol? id) (not (list? id)))
+				(with-lists id args env)
+				(extend-env 
+					id
+					args env))])
 			(loop-through body envi))))
+				
+;???????????Can you give me a quick run-down on the next four functions? Just a sentence or two would be great.				
+(define with-lists 
+	(lambda (vars args env)
+		(cond [(symbol? vars) 
+				(extend-env (list vars) 
+					(list args) env)]
+					
+					
+					
+			[(not (list? vars)) 
+				(let* ([x-vars (get-nice-vars vars)]
+						[x-args (find-correct-args args (get-list-placement vars 0) 0)])
+					(extend-env x-vars x-args env))])))
+					
+(define get-nice-vars
+	(lambda (nls)
+		(cond [(not (pair? nls)) (cons nls '())]
+			[else (cons (car nls) (get-nice-vars (cdr nls)))])))
+			
+(define get-list-placement 
+	(lambda (vars count)
+		(cond [(not (pair? vars)) count]
+			[else (get-list-placement (cdr vars) (+ 1 count))])))
+			
+(define find-correct-args
+	(lambda (args place count)
+		(cond [(equal? count place) 
+				(list args)]
+			[else (cons (car args) (find-correct-args (cdr args) place (+ 1 count)))])))
 
 
 
