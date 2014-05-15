@@ -1,30 +1,30 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
 
 
-(define check-in-env?
-	(lambda (id env)
-		(cases environment env
-			(empty-env-record () #f)
-			(extended-env-record (syms vals envi)
-				(let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
-					(if (andmap number? pos)
-						#t
-						(check-in-env? id envi)))))))
+; (define check-in-env?
+	; (lambda (id env)
+		; (cases environment env
+			; (empty-env-record () #f)
+			; (extended-env-record (syms vals envi)
+				; (let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
+					; (if (andmap number? pos)
+						; #t
+						; (check-in-env? id envi)))))))
 						
 
 								
-(define remove-at-pos
-	(lambda (pos ls count)
-		(if (equal? pos count)
-			(cdr ls)
-			(cons (car ls) (remove-at-pos pos (cdr ls) (+ 1 count))))))
+; (define remove-at-pos
+	; (lambda (pos ls count)
+		; (if (equal? pos count)
+			; (cdr ls)
+			; (cons (car ls) (remove-at-pos pos (cdr ls) (+ 1 count))))))
 			
 		
-(define remove-not-number
-	(lambda (ls)
-		(cond [(null? ls) '()]
-			[(not (number? (car ls))) (remove-not-number (cdr ls))]
-			[else (cons (car ls) (remove-not-number (cdr ls)))])))
+; (define remove-not-number
+	; (lambda (ls)
+		; (cond [(null? ls) '()]
+			; [(not (number? (car ls))) (remove-not-number (cdr ls))]
+			; [else (cons (car ls) (remove-not-number (cdr ls)))])))
 			
 (define extend-env
 	(lambda (syms vals env)
@@ -58,9 +58,9 @@
 (define global-env 
 	init-env)
 
-(define new-env
-	(lambda (env)
-		env))
+; (define new-env
+	; (lambda (env)
+		; env))
 
 (define list-find-position
   (lambda (sym los)

@@ -61,7 +61,7 @@
 		
 	   (eval-one-exp '(letrec ([product
 		       (lambda (x y)
-			   (display(+ 3 2))
+			  
 			   
 			 (if (null? y)
 			     '()

@@ -126,9 +126,6 @@
 ;Evaluates the lambda.
 (define apply-lambda
 	(lambda (id body args env)
-		; (display (check-in-env? id env)) (newline)
-		; (display id) (newline)
-		; (display env) (newline)
 		(let ([envi 
 			(if (or (symbol? id) (not (list? id)))
 				(with-lists id args env)
