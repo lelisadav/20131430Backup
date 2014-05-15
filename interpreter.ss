@@ -33,7 +33,8 @@
 		[named-let-exp (name vars exp bodies) ;this is a stub
 			(printf "Something went wrong.")]
 		[letrec-exp (vars vals bodies) 
-		;this creates a ls of the length vars, and fills it with evaluated expressions, then puts that in the env.
+		;this creates a ls of the same length as vars, and fills it with evaluated expressions, 
+		;then puts that in the env.
 			(let* ([ls (list-fill(length vars) '#(42))]
 				[new-env (extend-env vars ls env)]
 				[evals (map (lambda (x) (eval-exp x new-env)) vals)])
@@ -72,7 +73,8 @@
 			;this is a stub
 			(printf "I should never be here!")]
 		[set!-exp (id body)
-			(printf "Nothing here.")]
+			(env-set! id (eval-exp body env) env)
+			]
 		[while-exp (test body)
 			;this creates a while-exp by first checking to see if the test is true
 			;if so it iterates through the body and 
@@ -85,6 +87,9 @@
 		[when-exp (condition body)
 			;this is also a stub
 			(printf "Error when-exp")]
+		[define-exp (name body)
+			(add-to-global name (eval-exp body env))
+			]
 				
 		[else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 		
@@ -181,27 +186,27 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		; (newline)
-		; (newline)
-		; (printf "\tEvaluating:\t")
-		; (display x)
-		; (newline)
-		; (printf "\tThe correct answer is:\t")
-		 (top-level-eval (syntax-expand (parse-exp x)))
-		; (let ((res (eval x)))
-			; (display res)
-			; (newline)
-			; (display "\tOur result: ")
-			; (let ((ourres 
-			; (top-level-eval (syntax-expand (parse-exp x)))
-			; ))
-			; (display ourres)
-			; (newline)
-			; (if (equal? ourres res)
-				; (display "\tCorrect!")
-				; (display "\tIncorrect.")
-				; )
-			; ourres))
+		(newline)
+		(newline)
+		(printf "\tEvaluating:\t")
+		(display x)
+		(newline)
+		(printf "\tThe correct answer is:\t")
+		 ; (top-level-eval (syntax-expand (parse-exp x)))
+		(let ((res (eval x)))
+			(display res)
+			(newline)
+			(display "\tOur result: ")
+			(let ((ourres 
+			(top-level-eval (syntax-expand (parse-exp x)))
+			))
+			(display ourres)
+			(newline)
+			(if (equal? ourres res)
+				(display "\tCorrect!")
+				(display "\tIncorrect.")
+				)
+			ourres))
 			)
 			
 			)
@@ -247,7 +252,8 @@
 							(list(var-exp name)))) (map syntax-expand vals))] 
 			[define-exp (name body)
 				;allows the use of define
-				(lambda-exp (list name) (list (syntax-expand body)))]
+				(define-exp name(syntax-expand body))
+				]
 			[cond-exp (tests vals)
 				;creates nested if statements
 				(cond [(and (null? tests) (not (null? vals)))

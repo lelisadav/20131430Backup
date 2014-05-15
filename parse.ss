@@ -35,8 +35,9 @@
 				(eopl:error 'parse-exp
 					"Error in parse-exp: application ~s is not a proper list" datum)]
 			[(pair? datum)
-				(cond [(eqv? (car datum) 'define)
-						(define-exp (cadr datum) (caddr datum))]
+				(cond 
+				[(eqv? (car datum) 'define)
+						(define-exp (cadr datum) (parse-exp(caddr datum)))]
 					[(eqv? (car datum) 'set!)
 						(if (check-set? (cdr datum))
 							(set!-exp (cadr datum) (parse-exp (caddr datum) ))
@@ -168,6 +169,8 @@
 						(and-exp (map parse-exp (cdr datum)))]
 					[(eqv? (car datum) 'case)
 						(case-exp (parse-exp (cadr datum)) (grab-cases (cddr datum)) (grab-case-nexts (cddr datum)))]
+					; [(eqv? (car datum) 'define)
+						; (define-exp (cadr datum) (map parse-exp (cddr datum)))]
 					[else (app-exp
 						(parse-exp (car datum))
 						(map parse-exp (cdr datum) 

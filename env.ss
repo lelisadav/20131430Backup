@@ -37,6 +37,9 @@
   (lambda (form)
 	(let ([x (eval-exp form (empty-env))])
     ; later we may add things that are not expressions.
+		
+		
+		;>>>>>>>>>>>>>>>>>>>>>>>>>.Check line below, may be causing problems
 		(set! global-env init-env)
 		x)))
 			
@@ -57,11 +60,55 @@
 			
 (define global-env 
 	init-env)
+(define reset-global-env
+	(lambda ()
+	(set! global-env init-env)))
 
+(define add-to-global
+	(lambda (name body)
+		(let* ([proc-names (cadr global-env)]
+			[proc-def (caddr global-env)])
+		(set-cdr! proc-names (append (list (car proc-names)) (cdr proc-names)))
+		(set-car! proc-names name)
+		(set-cdr! proc-def (append (list (car proc-def)) (cdr proc-def)))
+		(set-car! proc-def body)
+		(set! global-env (extended-env-record proc-names proc-def (empty-env))))))
+	
 ; (define new-env
 	; (lambda (env)
 		; env))
-
+(define list-change
+	(lambda (ls old new)
+		(letrec (
+		[helper
+			(lambda(ls)
+				(if (null? ls)
+					'()
+					(if (equal?(car ls) old)
+					(append (list new) (cdr ls))
+					(append (list (car ls)) (helper (cdr ls))))))])
+		(helper ls))))
+(define list-change-index
+	(lambda (ls index new)
+		(let ([maxi (length ls)])
+		(letrec (
+		[helper
+			(lambda (ls ix)
+				(if (or(null? ls) (= ix maxi))
+					'()
+					(if (equal? ix index)
+						(append (list new) (cdr ls))
+						(append (list (car ls)) (helper (cdr ls) (+ 1 ix))))))])
+		(helper ls 0)))))
+		
+(define env-set!
+	(lambda (name body env)
+		(let* ([names (cadr env)]
+		[bodies (caddr env)]
+		[index (list-find-position name names)]
+		[changed-body (list-change-index bodies index body)]
+		[changed-names (list-change-index names index name)])
+		(set-cdr! env (list changed-names changed-body (cadddr env))))))
 (define list-find-position
   (lambda (sym los)
     (list-index (lambda (xsym) (eqv? sym xsym)) los)))

@@ -120,6 +120,9 @@
 		(id check-lam?)
 		(body (list-of expression-o?))
 		(env environment?)]
+	[user-defined 
+		(name symbol?)
+		(body (list-of expression?))]
 	
 	)
 
