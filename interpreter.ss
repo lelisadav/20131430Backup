@@ -196,22 +196,7 @@
 	;It first parses the expression
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
-		; (newline)
-<<<<<<< HEAD
-		; (newline)
-		; (printf "\tEvaluating:\t")
-		; (display x)
-		; (newline)
-		; (printf "\tThe correct answer is:\t")
-		 (top-level-eval (syntax-expand (parse-exp x)))
-		; (let ((res (eval x)))
-			; (display res)
-			; (newline)
-			; (display "\tOur result: ")
-			; (let ((ourres 
-			; (top-level-eval (syntax-expand (parse-exp x)))
-			; ))
-=======
+
 		(newline)
 		(printf "\tEvaluating:\t")
 		(display x)
