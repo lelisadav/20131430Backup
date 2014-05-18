@@ -37,10 +37,7 @@
   (lambda (form)
 	(let ([x (eval-exp form (empty-env))])
     ; later we may add things that are not expressions.
-		
-		
-		;>>>>>>>>>>>>>>>>>>>>>>>>>.Check line below, may be causing problems
-		(set! global-env init-env)
+		;(set! global-env init-env)
 		x)))
 			
 (define *prim-proc-names* 
