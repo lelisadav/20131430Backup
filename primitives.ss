@@ -94,6 +94,7 @@
 				(apply-def (car args) (cdr args))]
 			[(list-tail) (list-tail (car args) (cadr args))]
 			[(append) (apply append-def args)]
+			[(reverse) (apply reverse-def args)]
 		    [else (error 'apply-prim-proc 
 				"Bad primitive procedure name: ~s" 
 				prim-proc)])))
@@ -239,3 +240,10 @@
             (if (null? ls)
                 (f (car args) (cdr args))
                 (cons (car ls) (g (cdr ls))))))))) 
+(define reverse-def
+	(lambda (lst)
+		(letrec ([helper 
+		(lambda (forwards backwards)
+		(if (null? forwards) backwards 
+		(helper (cdr forwards) (cons (car forwards) backwards))))])
+		(helper lst '()))))

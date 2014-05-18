@@ -134,7 +134,7 @@
 (define prim-proc?
 	(lambda (sym)
 		(let loop ([sym sym]
-				[prim-procs *prim-proc-names*])
+				[prim-procs (*prim-proc-names*)])
 			(cond [(null? prim-procs) #f]
 				[(eqv? (car prim-procs) (car sym)) #t]
 				[else (loop sym (cdr prim-procs))]))))

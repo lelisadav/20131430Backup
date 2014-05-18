@@ -3,10 +3,10 @@
 (define (test-set!-local-variables)
     (let ([correct '(
 		     73
-		     ; 93
-		     ; 19
-		     ; 8
-		     ; 43
+		     93
+		     19
+		     8
+		     43
 		     )]
           [answers 
             (list 
@@ -16,22 +16,22 @@
 			  (+ 3 (* n 10)))) 
 		(set! x 7) 
 		(f x)))
-	     ; (eval-one-exp '((lambda (x) (set! x (+ x 1)) (+ x 2)) 90))
-	     ; (eval-one-exp ' 
-	      ; (let ([x 5] [y 3]) 
-		; (let ([z (begin (set! x (+ x y)) 
-				; x)]) 
-		  ; (+ z (+ x y)))))
-	     ; (eval-one-exp ' 
-	      ; (let ([a 5]) 
-		; (if (not (= a 6)) 
-		    ; (begin (set! a (+ 1 a)) 
-			   ; (set! a (+ 1 a))) 3) (+ 1 a)))
-	     ; (eval-one-exp ' 
-	      ; (let ([f #f]) 
-		; (let ([dummy (begin (set! f (lambda (n) (+ 3 (* n 10)))) 
-				    ; 3)]) 
-		  ; (f 4))))
+	     (eval-one-exp '((lambda (x) (set! x (+ x 1)) (+ x 2)) 90))
+	     (eval-one-exp ' 
+	      (let ([x 5] [y 3]) 
+		(let ([z (begin (set! x (+ x y)) 
+				x)]) 
+		  (+ z (+ x y)))))
+	     (eval-one-exp ' 
+	      (let ([a 5]) 
+		(if (not (= a 6)) 
+		    (begin (set! a (+ 1 a)) 
+			   (set! a (+ 1 a))) 3) (+ 1 a)))
+	     (eval-one-exp ' 
+	      (let ([f #f]) 
+		(let ([dummy (begin (set! f (lambda (n) (+ 3 (* n 10)))) 
+				    3)]) 
+		  (f 4))))
 	     )])
       (display-results correct answers equal?)))
 
@@ -183,7 +183,8 @@
 		 (let ([snoc (lambda (x y) 
 			       (append y (list x)))]) 
 		   (ns-list-recur '() snoc snoc)))) 
-	      (eval-one-exp '(reverse* '(1 (2 3) (((4))) () 5)))))])
+	      (eval-one-exp '(reverse* '(1 (2 3) (((4))) () 5))))
+		  )])
       (display-results correct answers equal?)))
 
 (define (test-set!-global-variables)
@@ -448,14 +449,14 @@
 ;#by loading this file (and your solution) and typing (r)
 
 (define (run-all)
-  (display 'set!-local-variables) 
-  (test-set!-local-variables)
+  ; (display 'set!-local-variables) 
+  ; (test-set!-local-variables)
   ; (display 'simple-defines) 
   ; (test-simple-defines)    
   ; (display 'letrec-and-define) 
   ; (test-letrec-and-define)    
-  ; (display 'named-let-and-define) 
-  ; (test-named-let-and-define)
+  (display 'named-let-and-define) 
+  (test-named-let-and-define)
   ; (display 'set!-global-variables) 
   ; (test-set!-global-variables)
   ; (display 'order-matters!) 

@@ -38,40 +38,43 @@
   (lambda (form)
 	(let ([x (eval-exp form (empty-env))])
     ; later we may add things that are not expressions.
-		(set! global-env init-env)
+		; (set! global-env (init-env))
 		x)))
 			
 (define *prim-proc-names* 
+	(lambda ()
 	'(+ - add1 sub1 cons = * quotient / zero? not and or < > <= >= list null? assq eq? equal? atom? 
 	length list->vector list? pair? procedure? vector->list vector make-vector vector-ref 
 	vector? number? symbol? set-car! set-cdr! vector-set! display newline
 	caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar 
 	cadddr caddr cadr car cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar 
-	cddadr cddar cdddar cddddr cdddr cddr cdr map apply append list-tail eqv?))
+	cddadr cddar cdddar cddddr cdddr cddr cdr map apply append list-tail eqv?)))
 
-(define init-env         ; for now, our initial global environment only contains 
+(define init-env  
+	(lambda ()       ; for now, our initial global environment only contains 
 	(extend-env            ; procedure names.  Recall that an environment associates
-		*prim-proc-names*   ;  a value (not an expression) with an identifier.
+		(*prim-proc-names*)   ;  a value (not an expression) with an identifier.
 		(map prim-proc      
-			*prim-proc-names*)
-		(empty-env)))
-			
+			(*prim-proc-names*))
+		(empty-env))))
+
 (define global-env 
-	init-env)
+	(init-env))
 (define reset-global-env
 	(lambda ()
-	(set-car! global-env (car init-env))
-	(set-cdr! global-env (cdr init-env))))
+		(set! global-env (init-env))))
+	; (set-car! global-env (car init-env))
+	; (set-cdr! global-env (cdr init-env))))
 
 (define add-to-global
 	(lambda (name body)
 		(let* ([proc-names (cadr global-env)]
-			[proc-def (caddr global-env)])
-		(set-cdr! proc-names (append (list (car proc-names)) (cdr proc-names)))
-		(set-car! proc-names name)
-		(set-cdr! proc-def (append (list (car proc-def)) (cdr proc-def)))
-		(set-car! proc-def body)
-		(set! global-env (extended-env-record proc-names proc-def (empty-env))))))
+				[proc-def (caddr global-env)])
+			; (set-cdr! proc-names (append (list (car proc-names)) (cdr proc-names)))
+			; (set-car! proc-names name)
+			; (set-cdr! proc-def (append (list (car proc-def)) (cdr proc-def)))
+			; (set-car! proc-def body)
+			(set! global-env (extended-env-record (cons name proc-names) (cons body proc-def) (empty-env))))))
 	
 ; (define new-env
 	; (lambda (env)
@@ -102,12 +105,12 @@
 		
 (define env-set!
 	(lambda (name body env)
-			(let* ([names (cadr env)]
-		[bodies (caddr env)]
-		[index (list-find-position name names)]
-		[changed-body (list-change-index bodies index body)]
-		[changed-names (list-change-index names index name)])
-		(set-cdr! env (list changed-names changed-body (cadddr env))))))
+			; (let* ([names (cadr env)]
+		; [bodies (caddr env)]
+		; [index (list-find-position name names)]
+		; [changed-body (list-change-index bodies index body)]
+		; [changed-names (list-change-index names index name)])
+		; (set-cdr! env (list changed-names changed-body (cadddr env))))))
 
 		; (newline)
 		; (printf "cadr: ")
@@ -119,8 +122,8 @@
 		; (newline)
 		; (printf "cadddr: ")
 		; (display (cadddr env))
-		; (if (not (equal? env (empty-env-record)))
-			; (begin
+		(if (not (equal? env (empty-env-record)))
+			(begin
 				; (display "set! --> env change in progress")
 				; (newline)
 				; (printf "\t\t")
@@ -130,34 +133,34 @@
 				; (newline)
 				; (display (cadddr env))
 				; (newline)
-				; (let* ([names (cadr env)]
-					; [bodies (caddr env)]
-					; [index (list-find-position name names)])
+				(let* ([names (cadr env)]
+					[bodies (caddr env)]
+					[index (list-find-position name names)])
 					; (display index)
-					; (if (equal? index #f)
-						; (env-set! name body (cadddr env))
-						; (let* (	[changed-body (list-change-index bodies index body)]
-								; [changed-names (list-change-index names index name)])
-								; (set-cdr! env (list changed-names changed-body (cadddr env)))
+					(if (equal? index #f)
+						(env-set! name body (cadddr env))
+						(let* (	[changed-body (list-change-index bodies index body)]
+								[changed-names (list-change-index names index name)])
+								(set-cdr! env (list changed-names changed-body (cadddr env)))
 								; (display env)
-								; )))
+								)))
 								
 						
-			; )
-			; (begin 
+			)
+			(begin 
 				; (display "Checking global!")
 				; (display global-env)
-				; (let* ([names (cadr global-env)]
-						; [bodies (caddr global-env)]
-						; [index (list-find-position name names)])
-						; (if (equal? index #f)
-							; (eopl:error 'apply-env ; procedure to call if id not in env
-							; "variable not found in environment: ~s" name)
-							; (let* ([changed-body (list-change-index bodies index body)]
-									; [changed-names (list-change-index names index name)])
-									; (set-cdr! global-env (list changed-names changed-body (cadddr global-env)))))))
+				(let* ([names (cadr global-env)]
+						[bodies (caddr global-env)]
+						[index (list-find-position name names)])
+						(if (equal? index #f)
+							(eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" name)
+							(let* ([changed-body (list-change-index bodies index body)]
+									[changed-names (list-change-index names index name)])
+									(set-cdr! global-env (list changed-names changed-body (cadddr global-env)))))))
 			
-			; )))
+			)))
 (define list-find-position
   (lambda (sym los)
     (list-index (lambda (xsym) (eqv? sym xsym)) los)))

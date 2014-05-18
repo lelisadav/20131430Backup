@@ -16,8 +16,8 @@
 ; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
-	(display exp)
-	(newline)
+	; (display exp)
+	; (newline)
 	; (display env)
     (cases expression exp
 		[lit-exp (datum) 
@@ -25,8 +25,9 @@
 				(cadr datum) ;this is because we don't want it to deal with quote
 				datum)]
 		[var-exp (id) 
-			(display "evaling var")
-			(display id);this takes a variable exp, applies the environment to it and returns the result
+			; (display "evaling var:\t")
+			; (display id)
+			;this takes a variable exp, applies the environment to it and returns the result
 			(apply-env env id
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
@@ -35,6 +36,8 @@
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
+		[or-exp (body)
+			(printf "Error!")]
 		; [named-let-exp (name vars exp bodies) ;this is a stub
 			; (printf "Something went wrong.")]
 		[letrec-exp (vars vals bodies) 
@@ -79,9 +82,9 @@
 			;this is a stub
 			(printf "I should never be here!")]
 		[set!-exp (id body)
-			(display "set!-exp here")
-			(newline)
-			(display env)
+			; (display "set!-exp here")
+			; (newline)
+			; (display env)
 			(env-set! id (eval-exp body env) env)
 			]
 		[while-exp (test body)
@@ -97,7 +100,7 @@
 			;this is also a stub
 			(printf "Error when-exp")]
 		[define-exp (name body)
-			(display "define-exp here")
+			; (display "define-exp here")
 			(add-to-global name (eval-exp body env))
 			]
 				
@@ -197,25 +200,25 @@
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
 
-		(newline)
-		(printf "\tEvaluating:\t")
-		(display x)
-		(newline)
+		; (newline)
+		; (printf "\tEvaluating:\t")
+		; (display x)
+		; (newline)
 		; (display global-env)
-		(newline)
-		(printf "\tThe correct answer is:\t")
+		; (newline)
+		; (printf "\tThe correct answer is:\t")
 		
 		 ; (top-level-eval (syntax-expand (parse-exp x)))
 		(let ((res (eval x)))
-			(display res)
-			(newline)
-			(display "\t\tOur result: \t")
+			; (display res)
+			; (newline)
+			; (display "\t\tOur result: \t")
 			(let ((ourres 
 			(top-level-eval (syntax-expand (parse-exp x)))
 
 			))
-						(printf "\n\tGlobal env: \n\t\t\t")
-						(display global-env)
+						; (printf "\n\tGlobal env: \n\t\t\t")
+						; (display global-env)
 			; (display ourres)
 			; (newline)
 			; (if (equal? ourres res)
@@ -244,6 +247,7 @@
 				(app-exp (lambda-exp vars (map syntax-expand body)) (map syntax-expand vals))]
 					
 			[let*-exp (vars vals body)
+				(display exp)
 				;converts a let*-exp into an application of lambda as shown by the syntax-definition of let*
 				(if (null? vars)
 					(map syntax-expand body)
@@ -251,7 +255,7 @@
 						(lambda-exp (list (car vars)) 
 							(syntax-expand 
 								(let*-exp (cdr vars) (cdr vals) body))) 
-						(list (car vals))))]
+						(begin (display (list (car vals)))(list (car vals)))))]
 			[letrec-exp (vars vals body)
 				;creates a letrec expression
 				; (display idss)
@@ -298,11 +302,11 @@
 				(set!-exp id (syntax-expand body))]
 			[if-else-exp (test success fail)
 				;just have to check for changes to the success and fail expr
-				(if-else-exp test 
+				(if-else-exp (syntax-expand test) 
 					(syntax-expand success) (syntax-expand fail))]
 			[if-exp-null (test success)
 				;just have to check for changes to the success expr
-				(if-exp-null test (syntax-expand success))]
+				(if-exp-null (syntax-expand test) (syntax-expand success))]
 			[while-exp (test body)
 				;checks for changes to the test and the bodies
 				(while-exp (syntax-expand test) (map syntax-expand body))]
@@ -320,7 +324,7 @@
 					(app-exp (lambda-exp (list 'v)
 						(list (if-else-exp (var-exp 'v)
 							(var-exp 'v)
-							(syntax-expand (or-exp (cdr body)))))) (list (car body))))]
+							(syntax-expand (or-exp (cdr body)))))) (list (syntax-expand(car body)))))]
 			[and-exp (body) 
 				;converts the and-exp to the parsed form of this: [basically]
 				; (define and-def
@@ -335,7 +339,7 @@
 					(app-exp (lambda-exp (list 'v)
 						(list (if-else-exp (var-exp 'v)
 							(syntax-expand (and-exp (cdr body)))
-							(var-exp 'v)))) (list (car body))))]
+							(var-exp 'v)))) (list (syntax-expand(car body)))))]
 			[case-exp (var cases next)
 				;converts to a conditional expression that does or
 				;????????????Right?
