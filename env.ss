@@ -1,31 +1,32 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
-
-
-; (define check-in-env?
-	; (lambda (id env)
-		; (cases environment env
-			; (empty-env-record () #f)
-			; (extended-env-record (syms vals envi)
-				; (let ([pos (remove-not-number (map (lambda (x) (list-find-position x syms)) id))])
-					; (if (andmap number? pos)
-						; #t
-						; (check-in-env? id envi)))))))
-						
-
-								
-; (define remove-at-pos
-	; (lambda (pos ls count)
-		; (if (equal? pos count)
-			; (cdr ls)
-			; (cons (car ls) (remove-at-pos pos (cdr ls) (+ 1 count))))))
-			
-		
-; (define remove-not-number
-	; (lambda (ls)
-		; (cond [(null? ls) '()]
-			; [(not (number? (car ls))) (remove-not-number (cdr ls))]
-			; [else (cons (car ls) (remove-not-number (cdr ls)))])))
-			
+(define display-env-varvals
+	(lambda (env)
+		(if (not (or (null? (cdr env)) (null? (cddr env))))
+			(begin
+		(newline)
+		(display (map (lambda (x y) (list x y)) (cadr env) (caddr env)))
+		(newline)))))
+(define display-env-vars
+	(lambda (env)
+		(if (not (null? (cdr env)))
+			(begin
+		(newline)
+		(display (cadr env))
+		(newline)))))
+(define display-env-vals
+	(lambda (env)
+		(if (not (or (null? (cdr env)) (null? (cddr env))))
+			(begin
+		(newline)
+		(display (caddr env))
+		(newline)))))
+(define display-env-parent
+	(lambda (env)
+		(if (not(equal? (car env) (empty-env-record)))
+			(begin
+		(newline)
+		(display (cadddr env))
+		(newline)))))
 (define extend-env
 	(lambda (syms vals env)
 		(extended-env-record syms vals env)))
@@ -59,7 +60,8 @@
 	init-env)
 (define reset-global-env
 	(lambda ()
-	(set! global-env init-env)))
+	(set-car! global-env (car init-env))
+	(set-cdr! global-env (cdr init-env))))
 
 (define add-to-global
 	(lambda (name body)
@@ -100,12 +102,55 @@
 		
 (define env-set!
 	(lambda (name body env)
-		(let* ([names (cadr env)]
-		[bodies (caddr env)]
-		[index (list-find-position name names)]
-		[changed-body (list-change-index bodies index body)]
-		[changed-names (list-change-index names index name)])
-		(set-cdr! env (list changed-names changed-body (cadddr env))))))
+		; (newline)
+		; (printf "cadr: ")
+		; (display (cadr env))
+		
+		; (newline)
+		; (printf "caddr: ")
+		; (display (caddr env))
+		; (newline)
+		; (printf "cadddr: ")
+		; (display (cadddr env))
+		(if (not (equal? env (empty-env-record)))
+			(begin
+				(display "set! --> env change in progress")
+				(newline)
+				(printf "\t\t")
+				(display name)
+				(newline)
+				(display (cadr env))
+				(newline)
+				(display (cadddr env))
+				(newline)
+				(let* ([names (cadr env)]
+					[bodies (caddr env)]
+					[index (list-find-position name names)])
+					; (display index)
+					(if (equal? index #f)
+						(env-set! name body (cadddr env))
+						(let* (	[changed-body (list-change-index bodies index body)]
+								[changed-names (list-change-index names index name)])
+								(set-cdr! env (list changed-names changed-body (cadddr env)))
+								; (display env)
+								)))
+								
+						
+			)
+			(begin 
+				(display "Checking global!")
+				(display global-env)
+				(let* ([names (cadr global-env)]
+						[bodies (caddr global-env)]
+						[index (list-find-position name names)])
+						(if (equal? index #f)
+							(eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" name)
+							(let* ([changed-body (list-change-index bodies index body)]
+									[changed-names (list-change-index names index name)])
+									(set-cdr! global-env (list changed-names changed-body (cadddr global-env)))))))
+			
+			)))
 (define list-find-position
   (lambda (sym los)
     (list-index (lambda (xsym) (eqv? sym xsym)) los)))

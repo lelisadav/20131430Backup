@@ -16,12 +16,17 @@
 ; This takes an environment and an expression and evaluates the expr in the env
 (define eval-exp
   (lambda (exp env)
+	(display exp)
+	(newline)
+	; (display env)
     (cases expression exp
 		[lit-exp (datum) 
 			(if (and (pair? datum) (eqv? (car datum) 'quote))
 				(cadr datum) ;this is because we don't want it to deal with quote
 				datum)]
-		[var-exp (id) ;this takes a variable exp, applies the environment to it and returns the result
+		[var-exp (id) 
+			(display "evaling var")
+			(display id);this takes a variable exp, applies the environment to it and returns the result
 			(apply-env env id
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
@@ -30,10 +35,11 @@
 							"variable not found in environment: ~s" id) (newline) (display env))))))]
 		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
-		[named-let-exp (name vars exp bodies) ;this is a stub
-			(printf "Something went wrong.")]
+		; [named-let-exp (name vars exp bodies) ;this is a stub
+			; (printf "Something went wrong.")]
 		[letrec-exp (vars vals bodies) 
-		;this creates a ls of the same length as vars, and fills it with evaluated expressions, 
+		;this creates a ls of the same length as vars, first fills it with junk ('#(42))
+		;and then mutates it to fill it with evaluated expressions, 
 		;then puts that in the env.
 			(let* ([ls (list-fill(length vars) '#(42))]
 				[new-env (extend-env vars ls env)]
@@ -73,6 +79,9 @@
 			;this is a stub
 			(printf "I should never be here!")]
 		[set!-exp (id body)
+			(display "set!-exp here")
+			(newline)
+			(display env)
 			(env-set! id (eval-exp body env) env)
 			]
 		[while-exp (test body)
@@ -88,6 +97,7 @@
 			;this is also a stub
 			(printf "Error when-exp")]
 		[define-exp (name body)
+			(display "define-exp here")
 			(add-to-global name (eval-exp body env))
 			]
 				
@@ -187,6 +197,7 @@
 	;Then it runs it through syntax-expand
 	;Then it evaluates it in the top level
 		; (newline)
+<<<<<<< HEAD
 		; (newline)
 		; (printf "\tEvaluating:\t")
 		; (display x)
@@ -200,6 +211,26 @@
 			; (let ((ourres 
 			; (top-level-eval (syntax-expand (parse-exp x)))
 			; ))
+=======
+		(newline)
+		(printf "\tEvaluating:\t")
+		(display x)
+		(newline)
+		; (display global-env)
+		(newline)
+		(printf "\tThe correct answer is:\t")
+		
+		 ; (top-level-eval (syntax-expand (parse-exp x)))
+		(let ((res (eval x)))
+			(display res)
+			(newline)
+			(display "\t\tOur result: \t")
+			(let ((ourres 
+			(top-level-eval (syntax-expand (parse-exp x)))
+
+			))
+						(printf "\n\tGlobal env: \n\t\t\t")
+						(display global-env)
 			; (display ourres)
 			; (newline)
 			; (if (equal? ourres res)
@@ -207,6 +238,10 @@
 				; (display "\tIncorrect.")
 				; )
 			; ourres))
+				
+			
+			ourres
+			))
 			)
 			
 			)
@@ -239,17 +274,17 @@
 			; ((letrec ((name (lambda (var ...) body1 body2 ...)))
 					; name)
 			; expr ...)
-			[named-let-exp (name vars vals body)
-				;creates a named-let-exp
-				;!!!!!!!!!!!!!!!!!!!Work in Progress!
+			; [named-let-exp (name vars vals body)
+				; creates a named-let-exp
+				; !!!!!!!!!!!!!!!!!!!Work in Progress!
 				; (display vars)
 				; (newline)
 				; (display vals)
-				(app-exp 
-					(syntax-expand
-						(letrec-exp (list name) (list vars) 
-							(list (lambda-exp vars (map syntax-expand body)))
-							(list(var-exp name)))) (map syntax-expand vals))] 
+				; (app-exp 
+					; (syntax-expand
+						; (letrec-exp (list name) (list vars) 
+							; (list (lambda-exp vars (map syntax-expand body)))
+							; (list(var-exp name)))) (map syntax-expand vals))] 
 			[define-exp (name body)
 				;allows the use of define
 				(define-exp name(syntax-expand body))
