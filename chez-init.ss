@@ -313,6 +313,12 @@
   (syntax-rules ()
     ((_ Type-name Expression . Clauses)
      (let ((type-predicate? (isa Type-name)))
+		; (newline)
+		; (printf "Cases for: ")
+		; (display Type-name)
+		; (printf "\t")
+		; (display Expression)
+		; (newline)
        (define-datatype:case-checker
          Type-name
          'Type-name

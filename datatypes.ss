@@ -15,11 +15,11 @@
 		(vars (list-of symbol?))
 		(vals (list-of expression-o?))
 		(body (list-of expression?)))
-	(named-let-exp
-		(name symbol?)
-		(vars (list-of symbol?))
-		(vals (list-of expression-o?))
-		(body (list-of expression?)))
+	; (named-let-exp
+		; (name symbol?)
+		; (vars (list-of symbol?))
+		; (vals (list-of expression-o?))
+		; (body (list-of expression?)))
 	[let*-exp 
 		(vars (list-of symbol?))
 		(vals (list-of expression?))
@@ -119,7 +119,7 @@
 	[lambda-proc-with-env
 		(id check-lam?)
 		(body (list-of expression-o?))
-		(env environment?)]
+		(env  environment? )]
 	[user-defined 
 		(name symbol?)
 		(body (list-of expression?))]
