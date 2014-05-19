@@ -115,6 +115,7 @@
 							[(not (andmap (lambda (x) (symbol? (car x))) (cadr datum)))
 								(eopl:error 'parse-exp
 								"vars in ~s-exp must be symbols ~s" 'let* datum)]
+							
 							[else
 								(let* (
 									[varvals (cadr datum)]
@@ -208,6 +209,14 @@
 		(cond [(null? datum) '()]
 			[(eqv? (caar datum) 'else) (cons (parse-exp (cadr (car datum))) '())]
 			[else (cons (parse-exp (cadr (car datum))) (grab-cond-vals (cdr datum)))])))
+(define let*->let
+	(lambda (ls)
+		(letrec ([nestedlet
+			(lambda (lets val)
+				(cond
+				((null? lets) val)
+				(else (list 'let (list (car lets)) (nestedlet (cdr lets) val)))))])
+			(append (nestedlet (cadr ls) (caddr ls))))))
 
 (define unparse-exp ; an inverse for parse-exp
   (lambda (exp)

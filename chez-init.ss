@@ -300,7 +300,7 @@
              (for-each
                (lambda (a f p pname)
                  (if (not (p a))
-                   (define-datatype:report-error 'Variant-name "  Bad ~a field (~s ~s) => #f."
+                  (define-datatype:report-error 'Variant-name "  Bad ~a field (~s ~s) => #f."
                      f pname a)))
                args
                field-names

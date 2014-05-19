@@ -32,8 +32,8 @@
 				(lambda (x) x)
 				(lambda () (apply-env global-env id
 					(lambda (x) x) ;procedure to call if id is in the environment 
-					(lambda () (display env) (begin (eopl:error 'apply-env ; procedure to call if id not in env
-							"variable not found in environment: ~s" id) (newline) (display env))))))]
+					(lambda () (begin (eopl:error 'apply-env ; procedure to call if id not in env
+							"variable not found in environment: ~s" id) )))))]
 		[let-exp (vars exp bodies) ;this is a stub
 			(printf "I shouldn't be here, ever!")]
 		[or-exp (body)
@@ -91,6 +91,7 @@
 			;this creates a while-exp by first checking to see if the test is true
 			;if so it iterates through the body and 
 			;evaluates each line of the body
+			; (display "while-exp")
 			(if (eval-exp test env)
 				(begin (loop-through body env)
 					(eval-exp exp env)))]
@@ -208,15 +209,15 @@
 		; (newline)
 		; (printf "\tThe correct answer is:\t")
 		
-		 ; (top-level-eval (syntax-expand (parse-exp x)))
-		(let ((res (eval x)))
+		(top-level-eval (syntax-expand (parse-exp x)))
+		; (let ((res (eval x)))
 			; (display res)
 			; (newline)
 			; (display "\t\tOur result: \t")
-			(let ((ourres 
-			(top-level-eval (syntax-expand (parse-exp x)))
+			; (let ((ourres 
+			; (top-level-eval (syntax-expand (parse-exp x)))
 
-			))
+			; ))
 						; (printf "\n\tGlobal env: \n\t\t\t")
 						; (display global-env)
 			; (display ourres)
@@ -228,8 +229,8 @@
 			; ourres))
 				
 			
-			ourres
-			))
+			; ourres
+			; ))
 			)
 			
 			)
@@ -247,15 +248,17 @@
 				(app-exp (lambda-exp vars (map syntax-expand body)) (map syntax-expand vals))]
 					
 			[let*-exp (vars vals body)
-				(display exp)
+				; (display exp)
 				;converts a let*-exp into an application of lambda as shown by the syntax-definition of let*
-				(if (null? vars)
-					(map syntax-expand body)
-					(app-exp 
-						(lambda-exp (list (car vars)) 
-							(syntax-expand 
-								(let*-exp (cdr vars) (cdr vals) body))) 
-						(begin (display (list (car vals)))(list (car vals)))))]
+				; (if (null? vars)
+					; (map syntax-expand body)
+					; (list (app-exp 
+						; (lambda-exp (list (car vars)) 
+							 ; (syntax-expand 
+								; (let*-exp (cdr vars) (cdr vals) body)))
+						; (list (car vals)))))
+				(syntax-expand (car (let*-expand vars vals body)))
+						]
 			[letrec-exp (vars vals body)
 				;creates a letrec expression
 				; (display idss)
@@ -367,6 +370,11 @@
 	(lambda (var ls)
 		(syntax-expand 
 			(or-exp (map (lambda (x) (app-exp (var-exp 'equal?) (list var x))) ls)))))
+(define let*-expand
+	(lambda (vars vals body)
+		(if (null? vars)
+			body
+			(list (let-exp (list(car vars)) (list(car vals)) (let*-expand (cdr vars) (cdr vals) body))))))
 
 
 		

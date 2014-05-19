@@ -1,32 +1,32 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  Based on EoPL section 2.3
-(define display-env-varvals
-	(lambda (env)
-		(if (not (or (null? (cdr env)) (null? (cddr env))))
-			(begin
-		(newline)
-		(display (map (lambda (x y) (list x y)) (cadr env) (caddr env)))
-		(newline)))))
-(define display-env-vars
-	(lambda (env)
-		(if (not (null? (cdr env)))
-			(begin
-		(newline)
-		(display (cadr env))
-		(newline)))))
-(define display-env-vals
-	(lambda (env)
-		(if (not (or (null? (cdr env)) (null? (cddr env))))
-			(begin
-		(newline)
-		(display (caddr env))
-		(newline)))))
-(define display-env-parent
-	(lambda (env)
-		(if (not(equal? (car env) (empty-env-record)))
-			(begin
-		(newline)
-		(display (cadddr env))
-		(newline)))))
+; (define display-env-varvals
+	; (lambda (env)
+		; (if (not (or (null? (cdr env)) (null? (cddr env))))
+			; (begin
+		; (newline)
+		; (display (map (lambda (x y) (list x y)) (cadr env) (caddr env)))
+		; (newline)))))
+; (define display-env-vars
+	; (lambda (env)
+		; (if (not (null? (cdr env)))
+			; (begin
+		; (newline)
+		; (display (cadr env))
+		; (newline)))))
+; (define display-env-vals
+	; (lambda (env)
+		; (if (not (or (null? (cdr env)) (null? (cddr env))))
+			; (begin
+		; (newline)
+		; (display (caddr env))
+		; (newline)))))
+; (define display-env-parent
+	; (lambda (env)
+		; (if (not(equal? (car env) (empty-env-record)))
+			; (begin
+		; (newline)
+		; (display (cadddr env))
+		; (newline)))))
 (define extend-env
 	(lambda (syms vals env)
 		(extended-env-record syms vals env)))
